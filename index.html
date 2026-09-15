@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chitii - Seamless Digital Name Picker & Random Draw</title>
+    <meta name="description" content="Chitii is a modern, fair, and interactive digital name picker & raffle draw app with animated shuffle, sound effects, and celebration confetti.">
+    <meta name="theme-color" content="#0f172a">
+    <meta property="og:title" content="Chitii - Digital Name Picker">
+    <meta property="og:description" content="Draw fair random winners easily for giveaways, raffles, classrooms, and team picks.">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            --background: #090d16;
+            --surface: #131b2e;
+            --surface-card: #1e293b;
+            --surface-border: rgba(255, 255, 255, 0.08);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+            --accent-pink: #ec4899;
+            --accent-yellow: #f59e0b;
+            --error: #f43f5e;
+            --radius-lg: 24px;
+            --radius-md: 14px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            background-image: 
+                radial-gradient(at 20% 20%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 80% 80%, rgba(236, 72, 153, 0.12) 0px, transparent 50%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 16px;
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 680px;
+            margin: auto;
+        }
+
+        .card {
+            background: rgba(19, 27, 46, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-lg);
+            padding: 36px 32px;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99, 102, 241, 0.12);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            margin-bottom: 12px;
+        }
+
+        header h1 {
+            font-size: 2.75rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        label {
+            font-size: 0.825rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+        }
+
+        .count-tag {
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: var(--surface-card);
+            padding: 2px 10px;
+            border-radius: 12px;
+            color: #cbd5e1;
+            border: 1px solid var(--surface-border);
+        }
+
+        textarea {
+            width: 100%;
+            height: 140px;
+            background: rgba(9, 13, 22, 0.7);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            color: var(--text);
+            font-size: 0.975rem;
+            line-height: 1.5;
+            resize: vertical;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 12px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+
+        .presets-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .preset-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .chip-btn {
+            background: var(--surface-card);
+            color: var(--text-muted);
+            border: 1px solid var(--surface-border);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.775rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chip-btn:hover {
+            background: rgba(99, 102, 241, 0.15);
+            color: #c7d2fe;
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .options-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--surface-border);
+            margin-bottom: 24px;
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .toggle-group input[type="checkbox"] {
+            accent-color: var(--primary);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .btn-draw {
+            width: 100%;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.25 ease;
+            box-shadow: 0 8px 24px -4px var(--primary-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-draw:hover:not(:disabled) {
+            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px -4px rgba(79, 70, 229, 0.5);
+        }
+
+        .btn-draw:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-draw:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .display-stage {
+            margin-top: 24px;
+            min-height: 130px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(9, 13, 22, 0.6);
+            border-radius: var(--radius-md);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+
+        .display-stage.active-shuffle {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.15) inset;
+        }
+
+        .display-stage.has-winner {
+            border-color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        #scroller {
+            font-size: 1.85rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-align: center;
+            word-break: break-word;
+            transition: transform 0.1s ease, color 0.15s ease;
+        }
+
+        #scroller.shuffling {
+            color: #ec4899;
+            transform: scale(1.08);
+        }
+
+        #scroller.winner {
+            color: #34d399;
+            font-size: 2.4rem;
+            animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            60% { transform: scale(1.15); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .error-msg {
+            color: var(--error);
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: none;
+            font-weight: 600;
+        }
+
+        .history-section {
+            margin-top: 24px;
+            border-top: 1px solid var(--surface-border);
+            padding-top: 20px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .history-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .empty-history {
+            color: rgba(148, 163, 184, 0.5);
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        footer {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 520px) {
+            .card {
+                padding: 24px 18px;
+            }
+            header h1 {
+                font-size: 2.1rem;
+            }
+            #scroller.winner {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="confettiCanvas"></canvas>
+
+    <div class="main-wrapper">
+        <main class="card">
+            <header>
+                <div class="badge">✨ Fair & Instant Randomizer</div>
+                <h1>Chitii</h1>
+                <p>The Seamless Digital Name Picker & Raffle Draw</p>
+            </header>
+
+            <div class="toolbar">
+                <label for="namesInput">Enter Names (One per line)</label>
+                <span id="nameCount" class="count-tag">0 names</span>
+            </div>
+
+            <textarea id="namesInput" placeholder="Alice&#10;Bob&#10;Charlie&#10;David&#10;Eva" oninput="updateCount()"></textarea>
+
+            <div class="presets-row">
+                <span class="preset-label">Presets:</span>
+                <button class="chip-btn" onclick="loadPreset('team')">👥 Team</button>
+                <button class="chip-btn" onclick="loadPreset('raffle')">🎟️ Raffle</button>
+                <button class="chip-btn" onclick="loadPreset('numbers')">🔢 1 to 10</button>
+                <button class="chip-btn" style="margin-left: auto;" onclick="clearAll()">🗑️ Clear</button>
+            </div>
+
+            <div class="options-row">
+                <label class="toggle-group">
+                    <input type="checkbox" id="removeWinnerCheck">
+                    Remove winner after draw
+                </label>
+                <label class="toggle-group">
+                    <input type="checkbox" id="soundCheck" checked>
+                    🔊 Sound Effects
+                </label>
+            </div>
+
+            <div id="error" class="error-msg">⚠️ Please enter at least 2 names to start the draw.</div>
+
+            <button id="drawBtn" class="btn-draw" onclick="startShuffle()">
+                <span>🎲 Draw a Winner</span>
+            </button>
+
+            <section class="display-stage" id="displayStage" aria-live="polite">
+                <div id="scroller">Ready for your draw</div>
+            </section>
+
+            <section class="history-section">
+                <div class="history-header">
+                    <span class="history-title">🏆 Previous Winners</span>
+                    <button class="chip-btn" onclick="clearHistory()">Clear History</button>
+                </div>
+                <div id="historyList" class="history-list">
+                    <span class="empty-history">No winners drawn yet</span>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Created with Chitii • Built for instant, transparent random selections.</p>
+        </footer>
+    </div>
+
+    <script>
+        class SoundFX {
+            constructor() {
+                this.ctx = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+            }
+
+            playTick() {
+                if (!document.getElementById('soundCheck').checked) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(320 + Math.random() * 80, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.06, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.04);
+                
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.04);
+            }
+
+            playFanfare() {
+                if (!document.getElementById('soundCheck').checked) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.09);
+                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime + idx * 0.09);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.09 + 0.3);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(this.ctx.currentTime + idx * 0.09);
+                    osc.stop(this.ctx.currentTime + idx * 0.09 + 0.3);
+                });
+            }
+        }
+
+        const sfx = new SoundFX();
+        let isShuffling = false;
+        let winnersHistory = [];
+
+        function updateCount() {
+            const input = document.getElementById('namesInput').value;
+            const names = parseNames(input);
+            document.getElementById('nameCount').textContent = `${names.length} name${names.length === 1 ? '' : 's'}`;
+            if (names.length >= 2) {
+                document.getElementById('error').style.display = 'none';
+            }
+        }
+
+        function parseNames(text) {
+            return text
+                .split('\n')
+                .map(n => n.trim())
+                .filter(n => n.length > 0);
+        }
+
+        function loadPreset(type) {
+            if (isShuffling) return;
+            const textarea = document.getElementById('namesInput');
+            if (type === 'team') {
+                textarea.value = "Alex Morgan\nSamantha Reed\nJordan Lee\nChris Evans\nTaylor Swift\nMorgan Freeman";
+            } else if (type === 'raffle') {
+                textarea.value = "Ticket #101\nTicket #102\nTicket #103\nTicket #104\nTicket #105\nTicket #106";
+            } else if (type === 'numbers') {
+                textarea.value = "1\n2\n3\n4\n5\n6\n7\n8\n9\n10";
+            }
+            updateCount();
+        }
+
+        function clearAll() {
+            if (isShuffling) return;
+            document.getElementById('namesInput').value = '';
+            document.getElementById('scroller').textContent = 'Ready for your draw';
+            document.getElementById('scroller').className = '';
+            document.getElementById('displayStage').className = 'display-stage';
+            updateCount();
+        }
+
+        function startShuffle() {
+            if (isShuffling) return;
+
+            const textarea = document.getElementById('namesInput');
+            const scroller = document.getElementById('scroller');
+            const drawBtn = document.getElementById('drawBtn');
+            const error = document.getElementById('error');
+            const displayStage = document.getElementById('displayStage');
+            const removeCheck = document.getElementById('removeWinnerCheck').checked;
+
+            const names = parseNames(textarea.value);
+
+            if (names.length < 2) {
+                error.style.display = 'block';
+                return;
+            }
+            error.style.display = 'none';
+
+            const winnerIndex = Math.floor(Math.random() * names.length);
+            const winner = names[winnerIndex];
+
+            isShuffling = true;
+            drawBtn.disabled = true;
+            drawBtn.innerHTML = '<span>⏳ Shuffling...</span>';
+            displayStage.className = 'display-stage active-shuffle';
+            scroller.className = 'shuffling';
+
+            let delay = 40;
+            const duration = 2800;
+            const startTime = Date.now();
+
+            function step() {
+                const elapsed = Date.now() - startTime;
+
+                if (elapsed < duration) {
+                    const randomName = names[Math.floor(Math.random() * names.length)];
+                    scroller.textContent = randomName;
+                    sfx.playTick();
+
+                    if (elapsed > duration - 1000) {
+                        delay += 14;
+                    }
+
+                    setTimeout(step, delay);
+                } else {
+                    scroller.textContent = `🎉 ${winner}`;
+                    scroller.className = 'winner';
+                    displayStage.className = 'display-stage has-winner';
+                    drawBtn.disabled = false;
+                    drawBtn.innerHTML = '<span>🎲 Draw Another Winner</span>';
+                    isShuffling = false;
+
+                    sfx.playFanfare();
+                    fireConfetti();
+                    addWinnerToHistory(winner);
+
+                    if (removeCheck) {
+                        names.splice(winnerIndex, 1);
+                        textarea.value = names.join('\n');
+                        updateCount();
+                    }
+                }
+            }
+
+            step();
+        }
+
+        function addWinnerToHistory(name) {
+            winnersHistory.unshift(name);
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = winnersHistory
+                .map((w, idx) => `<span class="history-item">🏆 #${winnersHistory.length - idx}: ${escapeHtml(w)}</span>`)
+                .join('');
+        }
+
+        function clearHistory() {
+            winnersHistory = [];
+            document.getElementById('historyList').innerHTML = '<span class="empty-history">No winners drawn yet</span>';
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        function fireConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#6366f1', '#ec4899', '#10b981', '#f59e0b', '#3b82f6', '#8b5cf6'];
+
+            for (let i = 0; i < 90; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2 + 50,
+                    vx: (Math.random() - 0.5) * 16,
+                    vy: (Math.random() - 0.8) * 16,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rotation: Math.random() * 360,
+                    rSpeed: (Math.random() - 0.5) * 10,
+                    opacity: 1
+                });
+            }
+
+            let animationFrame;
+            const startTime = Date.now();
+
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const elapsed = Date.now() - startTime;
+
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.35;
+                    p.rotation += p.rSpeed;
+                    p.opacity = Math.max(0, 1 - elapsed / 2500);
+
+                    ctx.save();
+                    ctx.globalAlpha = p.opacity;
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rotation * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                });
+
+                if (elapsed < 2500) {
+                    animationFrame = requestAnimationFrame(render);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            render();
+        }
+
+        updateCount();
+    </script>
+</body>
+</html>
